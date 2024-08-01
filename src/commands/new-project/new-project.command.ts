@@ -40,12 +40,8 @@ export class NewProjectCommand extends CommandRunner {
       rootDirname = await this.questionProjectName();
     }
 
-    if (rootDirname === '.') {
-      rootDirname = path.basename(path.resolve());
-    }
-
     const userCwd = process.cwd();
-    const rootDir = path.join(userCwd, rootDirname);
+    const rootDir = rootDirname === "." ? userCwd : path.join(userCwd, rootDirname);
 
     if (!fs.existsSync(rootDir)) {
       fs.mkdirSync(rootDir, { recursive: true });
@@ -56,7 +52,7 @@ export class NewProjectCommand extends CommandRunner {
         ignorePaths: ['.git', '.gitignore'],
       })
     ) {
-      const overwrite = await this.overwrite(rootDirname);
+      const overwrite = await this.overwrite(rootDir);
       if (!overwrite) {
         return;
       }
@@ -68,7 +64,7 @@ export class NewProjectCommand extends CommandRunner {
     await this.newProjectService.execute({
       rootDir,
       template,
-      projectName: rootDirname,
+      projectName: path.basename(rootDir),
     });
   }
 
