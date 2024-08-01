@@ -1,10 +1,9 @@
 {
   "name": "tsmaker",
-  "version": "0.0.1",
+  "version": "0.4.1",
   "type": "commonjs",
   "description": "",
   "author": "Alexandre Retamero <alexandreretamero@gamil.com>",
-  "private": true,
   "license": "ISC",
   "bin": {
     "tsmaker": "index.js"
@@ -31,9 +30,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
+    "@inquirer/prompts": "^5.3.6",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
@@ -43,7 +44,6 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@inquirer/prompts": "^5.3.6",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
