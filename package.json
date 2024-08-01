@@ -14,7 +14,8 @@
   },
   "files": [
     "index.js",
-    "dist"
+    "dist",
+    "templates"
   ],
   "scripts": {
     "build": "nest build",
@@ -42,6 +43,7 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@inquirer/prompts": "^5.3.6",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",

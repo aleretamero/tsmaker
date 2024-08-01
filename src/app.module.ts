@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
-import { NewCommand } from './commands/new/new.command';
+import { NewProjectModule } from 'commands/new-project/new-project.module';
 
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [NewCommand],
+  imports: [NewProjectModule],
 })
 export class AppModule {}
