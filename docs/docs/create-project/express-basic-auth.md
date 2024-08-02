@@ -1,5 +1,6 @@
 ---
-sidebar_position: 5
+title: Express Basic Auth
+sidebar_position: 2
 ---
 
 # Deploy your site
