@@ -1,17 +1,20 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { Command, CommandRunner } from 'nest-commander';
-import { input, confirm } from '@inquirer/prompts';
+import { Command, CommandRunner, Option } from 'nest-commander';
+import { input, confirm, select } from '@inquirer/prompts';
 import { FileSystem } from 'common/file-system';
 import { NewProjectService } from './new-project.service';
 
-interface NewProjectCommandOptions {}
+interface NewProjectCommandOptions {
+  packageManager?: string;
+}
 
 @Command({
   name: 'new',
   arguments: '<template> [name]',
   argsDescription: {
     template: 'The template to create the project from',
+    name: 'The name of the project',
   },
   description: 'Create a new project from a template',
 })
@@ -25,11 +28,20 @@ export class NewProjectCommand extends CommandRunner {
     options?: NewProjectCommandOptions,
   ): Promise<void> {
     const template = inputs[0];
+    let packageManager = options?.packageManager;
 
     const validTemplates = ['express'];
     if (!validTemplates.includes(template)) {
       console.error(
         `Invalid template: ${template}\n\n Available templates: ${validTemplates.join(', ')}`,
+      );
+      return;
+    }
+
+    const validPackageManagers = ['npm', 'yarn'];
+    if (packageManager && !validPackageManagers.includes(packageManager)) {
+      console.error(
+        `Invalid package manager: ${packageManager}\n\n Available package managers: ${validPackageManagers.join(', ')}`,
       );
       return;
     }
@@ -40,8 +52,13 @@ export class NewProjectCommand extends CommandRunner {
       rootDirname = await this.questionProjectName();
     }
 
+    if (!packageManager) {
+      packageManager = await this.questionPackageManager();
+    }
+
     const userCwd = process.cwd();
-    const rootDir = rootDirname === "." ? userCwd : path.join(userCwd, rootDirname);
+    const rootDir =
+      rootDirname === '.' ? userCwd : path.join(userCwd, rootDirname);
 
     if (!fs.existsSync(rootDir)) {
       fs.mkdirSync(rootDir, { recursive: true });
@@ -65,10 +82,20 @@ export class NewProjectCommand extends CommandRunner {
       rootDir,
       template,
       projectName: path.basename(rootDir),
+      packageManager,
     });
   }
 
-  private async questionProjectName() {
+  @Option({
+    flags: '-pm, --package-manager <packageManager>',
+    description: 'The package manager to use',
+    choices: ['npm', 'yarn'],
+  })
+  parsePackageManager(value: string) {
+    return value;
+  }
+
+  private async questionProjectName(): Promise<string> {
     return await input({
       message: 'Project name',
       validate: (value) => {
@@ -77,6 +104,22 @@ export class NewProjectCommand extends CommandRunner {
         }
         return true;
       },
+    });
+  }
+
+  private async questionPackageManager(): Promise<string> {
+    return await select({
+      message: 'Select a package manager',
+      choices: [
+        {
+          value: 'npm',
+          name: 'npm',
+        },
+        {
+          value: 'yarn',
+          name: 'yarn',
+        },
+      ],
     });
   }
 

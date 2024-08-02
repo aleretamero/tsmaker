@@ -8,11 +8,17 @@ interface NewProjectServiceOptions {
   rootDir: string;
   template: string;
   projectName: string;
+  packageManager: string;
 }
 
 @Injectable()
 export class NewProjectService {
-  async execute({ rootDir, template, projectName }: NewProjectServiceOptions) {
+  async execute({
+    rootDir,
+    template,
+    projectName,
+    packageManager,
+  }: NewProjectServiceOptions) {
     const templateDir = path.resolve(
       __dirname,
       '../../..',
@@ -39,11 +45,7 @@ export class NewProjectService {
     const targetPath = path.join(rootDir, 'package.json');
     fs.writeFileSync(targetPath, JSON.stringify(pkg, null, 2) + '\n');
 
-    execSync('npm install', {
-      cwd: rootDir,
-      stdio: 'inherit',
-      encoding: 'utf-8',
-    });
+    this.installDependencies(rootDir, packageManager);
   }
 
   private toValidProjectName(projectName: string) {
@@ -55,5 +57,26 @@ export class NewProjectService {
       .replace(/\s+/g, '-')
       .replace(/^[._]/, '')
       .replace(/[^a-z\d\-~]+/g, '-');
+  }
+
+  private installDependencies(rootDir: string, packageManager: string) {
+    switch (packageManager) {
+      case 'npm':
+        execSync('npm install', {
+          cwd: rootDir,
+          stdio: 'inherit',
+          encoding: 'utf-8',
+        });
+        break;
+      case 'yarn':
+        execSync('yarn install', {
+          cwd: rootDir,
+          stdio: 'inherit',
+          encoding: 'utf-8',
+        });
+        break;
+      default:
+        throw new Error(`Unsupported package manager: ${packageManager}`);
+    }
   }
 }
