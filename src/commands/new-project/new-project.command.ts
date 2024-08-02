@@ -11,9 +11,9 @@ interface NewProjectCommandOptions {
 
 @Command({
   name: 'new',
-  arguments: '<template> [name]',
+  arguments: '[template] [name]',
   argsDescription: {
-    template: 'The template to create the project from',
+    template: 'The template to create the project from (express, express-basic-auth)',
     name: 'The name of the project',
   },
   description: 'Create a new project from a template',
@@ -27,11 +27,11 @@ export class NewProjectCommand extends CommandRunner {
     inputs: string[],
     options?: NewProjectCommandOptions,
   ): Promise<void> {
-    const template = inputs[0];
+    let template = inputs[0];
     let packageManager = options?.packageManager;
 
-    const validTemplates = ['express'];
-    if (!validTemplates.includes(template)) {
+    const validTemplates = ['express', 'express-basic-auth'];
+    if (template && !validTemplates.includes(template)) {
       console.error(
         `Invalid template: ${template}\n\n Available templates: ${validTemplates.join(', ')}`,
       );
@@ -50,6 +50,10 @@ export class NewProjectCommand extends CommandRunner {
 
     if (rootDirname === undefined) {
       rootDirname = await this.questionProjectName();
+    }
+
+    if (!template) {
+      template = await this.questionTemplate();
     }
 
     if (!packageManager) {
@@ -104,6 +108,22 @@ export class NewProjectCommand extends CommandRunner {
         }
         return true;
       },
+    });
+  }
+
+  private async questionTemplate(): Promise<string> {
+    return await select({
+      message: 'Select a template',
+      choices: [
+        {
+          value: 'express',
+          name: 'Express',
+        },
+        {
+          value: 'express-basic-auth',
+          name: 'Express with basic auth',
+        },
+      ],
     });
   }
 
