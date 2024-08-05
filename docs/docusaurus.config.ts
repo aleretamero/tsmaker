@@ -56,27 +56,6 @@ const config: Config = {
     },
     footer: {
       style: 'dark',
-      links: [
-        {
-          title: 'Docs',
-          items: [
-            {
-              label: 'Getting Started',
-              to: '/docs/getting-started',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/aleretamero/tsmaker',
-            },
-          ],
-        },
-      ],
-
       copyright: `Copyright © ${new Date().getFullYear()} Tsmaker.`,
     },
     prism: {
